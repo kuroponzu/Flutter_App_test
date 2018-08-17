@@ -36,6 +36,26 @@ class _MyInputFormState extends State<InputForm> {
    final _myController2 = TextEditingController();
 
    Widget titleSection = Scaffold(
+       appBar: AppBar(
+         title: const Text('かしかりめも'),
+         actions: <Widget>[
+           // action button
+           //https://docs.flutter.io/flutter/material/Icons-class.html
+           IconButton(
+             icon: Icon(Icons.save),
+             onPressed: () {
+               print(_myController.text);
+             },
+           ),
+           IconButton(
+             icon: Icon(Icons.delete),
+             onPressed: () {
+               print("Delete");
+               _myController.text = "";
+             },
+           )
+         ],
+       ),
        body: new SafeArea(
            child: new Form(
                child: new ListView(
