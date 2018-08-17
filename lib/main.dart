@@ -45,6 +45,12 @@ class _MyInputFormState extends State<InputForm> {
              icon: Icon(Icons.save),
              onPressed: () {
                print(_myController.text);
+               Navigator.push(
+                 context,
+                 MaterialPageRoute(
+                     settings: const RouteSettings(name: "/home"),
+                     builder: (context) => new _List(_myController,_myController2)),
+               );
              },
            ),
            IconButton(
@@ -79,19 +85,69 @@ class _MyInputFormState extends State<InputForm> {
                          labelText: 'Name',
                        ),
                      ),
-
-                     new Container(
-                         padding: const EdgeInsets.only(left: 40.0, top: 20.0),
-                         child: new RaisedButton(
-                           child: const Text('Submit'),
-                           onPressed: null,
-                         )
-                     )
                    ]
                ))
        )
    );
    return titleSection;
  }
+}
+
+class _List extends StatelessWidget{
+
+  final param1;
+  final param2;
+
+  _List(this.param1,this.param2);
+
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("いちらん"),
+      ),
+      body: new Card(
+        child: new Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+             ListTile(
+              leading: const Icon(Icons.android),
+              title:  Text(param1.text),
+              subtitle:  Text(param2.text),
+            ),
+            new ButtonTheme.bar(
+              child: new ButtonBar(
+                children: <Widget>[
+                  new FlatButton(
+                    child: const Text("へんしゅう"),
+                    onPressed: (){
+                      print("へんしゅうだよ");
+                    },
+                  ),
+                ],
+              )
+            ),
+            const ListTile(
+              leading: const Icon(Icons.android),
+              title: const Text("test"),
+              subtitle: const Text("tenst"),
+            ),
+            new ButtonTheme.bar(
+                child: new ButtonBar(
+                  children: <Widget>[
+                    new FlatButton(
+                      child: const Text('へんしゅうその２'),
+                      onPressed: (){
+                        print("へんしゅうだよその２");
+                      },
+                    ),
+                  ],
+                )
+            )
+          ],
+        )
+      )
+    );
+  }
 
 }
+
