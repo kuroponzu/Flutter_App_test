@@ -1,20 +1,11 @@
-<<<<<<< HEAD
 .DS_Store
-.dart_tool/
-
-.packages
-.pub/
-
-build/
-
-.flutter-plugins
-=======
 # See https://www.dartlang.org/guides/libraries/private-files
 
 # Files and directories created by pub
 .dart_tool/
 .packages
 .pub/
+.idea/
 build/
 # If you're building an application, you may want to check-in your pubspec.lock
 pubspec.lock
@@ -22,4 +13,3 @@ pubspec.lock
 # Directory created by dartdoc
 # If you don't generate documentation locally you can remove this line.
 doc/api/
->>>>>>> origin/master
