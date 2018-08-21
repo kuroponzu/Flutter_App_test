@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
 //        appBar: AppBar(
 //          title: Text("FlutterDemo"),
 //        ),
-        home: new InputForm(),
+        home: new _List(),
             //textSection,
       );
   }
@@ -29,7 +30,6 @@ class InputForm extends StatefulWidget {
 
 class _MyInputFormState extends State<InputForm> {
 //  final _formkey = GlobalKey<FormState>();
-
 //  @override
  Widget build(BuildContext context) {
    final _myController = TextEditingController();
@@ -49,7 +49,9 @@ class _MyInputFormState extends State<InputForm> {
                  context,
                  MaterialPageRoute(
                      settings: const RouteSettings(name: "/home"),
-                     builder: (context) => new _List(_myController,_myController2)),
+                     //builder: (context) => new _List(_myController,_myController2)
+                     builder: (context) => new _List()
+               ),
                );
              },
            ),
@@ -93,61 +95,72 @@ class _MyInputFormState extends State<InputForm> {
  }
 }
 
-class _List extends StatelessWidget{
+class _List extends StatelessWidget {
 
-  final param1;
-  final param2;
+//  final param1;
+//  final param2;
+//
+//  _List(this.param1, this.param2);
 
-  _List(this.param1,this.param2);
-
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("いちらん"),
       ),
       body: new Card(
-        child: new Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-             ListTile(
-              leading: const Icon(Icons.android),
-              title:  Text(param1.text),
-              subtitle:  Text(param2.text),
-            ),
-            new ButtonTheme.bar(
-              child: new ButtonBar(
-                children: <Widget>[
-                  new FlatButton(
-                    child: const Text("へんしゅう"),
-                    onPressed: (){
-                      print("へんしゅうだよ");
-                    },
-                  ),
-                ],
+          child: new Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.android),
+                title: Text("テストのためにpram1無くしました"),
+                subtitle: Text("テストのためにpram2無くしました"),
+              ),
+              new ButtonTheme.bar(
+                  child: new ButtonBar(
+                    children: <Widget>[
+                      new FlatButton(
+                        child: const Text("へんしゅう"),
+                        onPressed: () {
+                          print("へんしゅうだよ");
+                        },
+                      ),
+                    ],
+                  )
+              ),
+              const ListTile(
+                leading: const Icon(Icons.android),
+                title: const Text("test"),
+                subtitle: const Text("tenst"),
+              ),
+              new ButtonTheme.bar(
+                  child: new ButtonBar(
+                    children: <Widget>[
+                      new FlatButton(
+                        child: const Text('へんしゅうその２'),
+                        onPressed: () {
+                          print("へんしゅうだよその２");
+                        },
+                      ),
+                    ],
+                  )
               )
+            ],
+          )
+      ),
+      floatingActionButton: new FloatingActionButton(
+        child: new Icon(Icons.check),
+        onPressed: () {
+          print("新規作成");
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              settings: const RouteSettings(name: "/new"),
+              builder: (BuildContext context) => new InputForm()
             ),
-            const ListTile(
-              leading: const Icon(Icons.android),
-              title: const Text("test"),
-              subtitle: const Text("tenst"),
-            ),
-            new ButtonTheme.bar(
-                child: new ButtonBar(
-                  children: <Widget>[
-                    new FlatButton(
-                      child: const Text('へんしゅうその２'),
-                      onPressed: (){
-                        print("へんしゅうだよその２");
-                      },
-                    ),
-                  ],
-                )
-            )
-          ],
-        )
-      )
+          );
+        },
+      ),
     );
   }
-
 }
-
