@@ -4,7 +4,9 @@ description: A new Flutter application.
 dependencies:
   flutter:
     sdk: flutter
-  firebase_analytics: ^0.3.3
+  # firebase_analytics: ^0.3.3
+  # firestore接続
+  cloud_firestore: ^0.7.3
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

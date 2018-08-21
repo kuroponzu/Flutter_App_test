@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 void main() => runApp(new MyApp());
@@ -15,7 +16,8 @@ class MyApp extends StatelessWidget {
 //        appBar: AppBar(
 //          title: Text("FlutterDemo"),
 //        ),
-        home: new _List(),
+        //home: new _List(),
+      home: InputForm(),
             //textSection,
       );
   }
@@ -103,50 +105,68 @@ class _List extends StatelessWidget {
 //  _List(this.param1, this.param2);
 
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text("いちらん"),
       ),
-      body: new Card(
-          child: new Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.android),
-                title: Text("テストのためにpram1無くしました"),
-                subtitle: Text("テストのためにpram2無くしました"),
-              ),
-              new ButtonTheme.bar(
-                  child: new ButtonBar(
-                    children: <Widget>[
-                      new FlatButton(
-                        child: const Text("へんしゅう"),
-                        onPressed: () {
-                          print("へんしゅうだよ");
-                        },
-                      ),
-                    ],
-                  )
-              ),
-              const ListTile(
-                leading: const Icon(Icons.android),
-                title: const Text("test"),
-                subtitle: const Text("tenst"),
-              ),
-              new ButtonTheme.bar(
-                  child: new ButtonBar(
-                    children: <Widget>[
-                      new FlatButton(
-                        child: const Text('へんしゅうその２'),
-                        onPressed: () {
-                          print("へんしゅうだよその２");
-                        },
-                      ),
-                    ],
-                  )
-              )
-            ],
-          )
+      body: new StreamBuilder<QuerySnapshot>(
+          stream: Firestore.instance.collection('promise').snapshots(),
+          builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
+            print(snapshot);
+            print(snapshot.hasData);
+            print(snapshot.error);
+            if (!snapshot.hasData) return const Text('Loading...');
+            return new ListView.builder(
+              itemCount: snapshot.data.documents.length,
+              padding: const EdgeInsets.only(top: 10.0),
+              itemExtent: 25.0,
+              itemBuilder: (context, index) =>
+                _buildListItem(context, snapshot.data.documents[index]),
+            );
+          }
+
+//              children: cards(
+//                child: new Column(
+//                  mainAxisSize: MainAxisSize.min,
+//                  children: <Widget>[
+//                    ListTile(
+//                      leading: const Icon(Icons.android),
+//                      title: Text("テストのためにpram1無くしました"),
+//                      subtitle: Text("テストのためにpram2無くしました"),
+//                    ),
+//                    new ButtonTheme.bar(
+//                        child: new ButtonBar(
+//                          children: <Widget>[
+//                            new FlatButton(
+//                              child: const Text("へんしゅう"),
+//                              onPressed: () {
+//                                print("へんしゅうだよ");
+//                              },
+//                            ),
+//                          ],
+//                        )
+//                    ),
+//                    const ListTile(
+//                      leading: const Icon(Icons.android),
+//                      title: const Text("test"),
+//                      subtitle: const Text("tenst"),
+//                    ),
+//                    new ButtonTheme.bar(
+//                        child: new ButtonBar(
+//                          children: <Widget>[
+//                            new FlatButton(
+//                              child: const Text('へんしゅうその２'),
+//                              onPressed: () {
+//                                print("へんしゅうだよその２");
+//                              },
+//                            ),
+//                          ],
+//                        )
+//                    );
+//                  ]
+//                )
+//            );
       ),
       floatingActionButton: new FloatingActionButton(
         child: new Icon(Icons.check),
@@ -161,6 +181,33 @@ class _List extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  Widget _buildListItem(BuildContext context, DocumentSnapshot document){
+    return new Card(
+        child: new Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    ListTile(
+                      leading: const Icon(Icons.android),
+                      title: Text(document['name']),
+                      subtitle: Text(document['loan']),
+                    ),
+                    new ButtonTheme.bar(
+                        child: new ButtonBar(
+                          children: <Widget>[
+                            new FlatButton(
+                              child: const Text("へんしゅう"),
+                              onPressed: () {
+                                print("へんしゅうだよ");
+                              },
+                            ),
+                          ],
+                        )
+                    ),
+                  ]
+        ),
     );
   }
 }
