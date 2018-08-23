@@ -12,13 +12,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       title: "FlutterDemo",
-//      home: Scaffold(
-//        appBar: AppBar(
-//          title: Text("FlutterDemo"),
-//        ),
-        //home: new _List(),
-      home: InputForm(),
-            //textSection,
+      home: _List(),
       );
   }
 }
@@ -31,7 +25,7 @@ class InputForm extends StatefulWidget {
 }
 
 class _MyInputFormState extends State<InputForm> {
-//  final _formkey = GlobalKey<FormState>();
+
 //  @override
  Widget build(BuildContext context) {
    final _myController = TextEditingController();
@@ -42,7 +36,6 @@ class _MyInputFormState extends State<InputForm> {
          title: const Text('かしかりめも'),
          actions: <Widget>[
            // action button
-           //https://docs.flutter.io/flutter/material/Icons-class.html
            IconButton(
              icon: Icon(Icons.save),
              onPressed: () {
@@ -71,16 +64,6 @@ class _MyInputFormState extends State<InputForm> {
                child: new ListView(
                  padding: const EdgeInsets.all(20.0),
                    children: <Widget>[
-//               new Flexible(
-//                 child: Column(
-//                   children: <Widget>[
-//                     Container(
-//                       child: Text("相手:"),
-//                     ),
-//                   ],)
-//             ),
-//             new Flexible(
-//               fit: FlexFit.loose,
                      new TextFormField(
                        controller: _myController,
                        decoration: const InputDecoration(
@@ -99,11 +82,6 @@ class _MyInputFormState extends State<InputForm> {
 
 class _List extends StatelessWidget {
 
-//  final param1;
-//  final param2;
-//
-//  _List(this.param1, this.param2);
-
   Widget build(BuildContext context) {
 
     return Scaffold(
@@ -118,55 +96,15 @@ class _List extends StatelessWidget {
             print(snapshot.error);
             if (!snapshot.hasData) return const Text('Loading...');
             return new ListView.builder(
+              scrollDirection: Axis.vertical,
               itemCount: snapshot.data.documents.length,
               padding: const EdgeInsets.only(top: 10.0),
-              itemExtent: 25.0,
+              //itemExtent: 25.0,
               itemBuilder: (context, index) =>
                 _buildListItem(context, snapshot.data.documents[index]),
             );
           }
 
-//              children: cards(
-//                child: new Column(
-//                  mainAxisSize: MainAxisSize.min,
-//                  children: <Widget>[
-//                    ListTile(
-//                      leading: const Icon(Icons.android),
-//                      title: Text("テストのためにpram1無くしました"),
-//                      subtitle: Text("テストのためにpram2無くしました"),
-//                    ),
-//                    new ButtonTheme.bar(
-//                        child: new ButtonBar(
-//                          children: <Widget>[
-//                            new FlatButton(
-//                              child: const Text("へんしゅう"),
-//                              onPressed: () {
-//                                print("へんしゅうだよ");
-//                              },
-//                            ),
-//                          ],
-//                        )
-//                    ),
-//                    const ListTile(
-//                      leading: const Icon(Icons.android),
-//                      title: const Text("test"),
-//                      subtitle: const Text("tenst"),
-//                    ),
-//                    new ButtonTheme.bar(
-//                        child: new ButtonBar(
-//                          children: <Widget>[
-//                            new FlatButton(
-//                              child: const Text('へんしゅうその２'),
-//                              onPressed: () {
-//                                print("へんしゅうだよその２");
-//                              },
-//                            ),
-//                          ],
-//                        )
-//                    );
-//                  ]
-//                )
-//            );
       ),
       floatingActionButton: new FloatingActionButton(
         child: new Icon(Icons.check),
@@ -186,7 +124,7 @@ class _List extends StatelessWidget {
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot document){
     return new Card(
-        child: new Column(
+          child: new Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     ListTile(
@@ -207,7 +145,7 @@ class _List extends StatelessWidget {
                         )
                     ),
                   ]
-        ),
+          ),
     );
   }
 }
