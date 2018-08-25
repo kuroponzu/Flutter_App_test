@@ -31,6 +31,8 @@ class _MyInputFormState extends State<InputForm> {
    final _myController = TextEditingController();
    final _myController2 = TextEditingController();
 
+   final _mainReference = Firestore.instance.collection('promise').document();  // 1
+
    Widget titleSection = Scaffold(
        appBar: AppBar(
          title: const Text('かしかりめも'),
@@ -39,6 +41,7 @@ class _MyInputFormState extends State<InputForm> {
            IconButton(
              icon: Icon(Icons.save),
              onPressed: () {
+               _mainReference.setData({ 'name': _myController.text, 'loan': _myController2.text });
                print(_myController.text);
                Navigator.push(
                  context,
@@ -54,7 +57,7 @@ class _MyInputFormState extends State<InputForm> {
              icon: Icon(Icons.delete),
              onPressed: () {
                print("Delete");
-               _myController.text = "";
+               //_myController.text = "";
              },
            )
          ],
@@ -70,6 +73,14 @@ class _MyInputFormState extends State<InputForm> {
                          icon: const Icon(Icons.person),
                          hintText: '名前',
                          labelText: 'Name',
+                       ),
+                     ),
+                     new TextFormField(
+                       controller: _myController2,
+                       decoration: const InputDecoration(
+                         icon: const Icon(Icons.person),
+                         hintText: '借りたもの',
+                         labelText: 'loan',
                        ),
                      ),
                    ]
@@ -91,9 +102,9 @@ class _List extends StatelessWidget {
       body: new StreamBuilder<QuerySnapshot>(
           stream: Firestore.instance.collection('promise').snapshots(),
           builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
-            print(snapshot);
-            print(snapshot.hasData);
-            print(snapshot.error);
+            //print(snapshot);
+            //print(snapshot.hasData);
+            //print(snapshot.error);
             if (!snapshot.hasData) return const Text('Loading...');
             return new ListView.builder(
               scrollDirection: Axis.vertical,
