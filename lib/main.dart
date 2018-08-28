@@ -16,10 +16,9 @@ class MyApp extends StatelessWidget {
       );
   }
 }
-
 class InputForm extends StatefulWidget {
-  InputForm({Key key, this.title}) : super(key: key);
-  final String title;
+  InputForm(this.docs);
+  final DocumentSnapshot docs;
   @override
   _MyInputFormState createState() => new _MyInputFormState();
 }
@@ -30,8 +29,17 @@ class _MyInputFormState extends State<InputForm> {
  Widget build(BuildContext context) {
    final _myController = TextEditingController();
    final _myController2 = TextEditingController();
-
-   final _mainReference = Firestore.instance.collection('promise').document();  // 1
+   var _mainReference;
+   if(this.widget.docs != null){
+     if(_myController.text == "") {
+       //_myController.text = "強制的に変更";//widget.docs['name'];
+       _myController.text = widget.docs['name'];
+       _myController2.text = widget.docs['loan'];
+       _mainReference = Firestore.instance.collection('promise').document(widget.docs.documentID);
+     }
+   }else{
+     _mainReference = Firestore.instance.collection('promise').document();
+   }
 
    Widget titleSection = Scaffold(
        appBar: AppBar(
@@ -99,23 +107,29 @@ class _List extends StatelessWidget {
       appBar: AppBar(
         title: Text("いちらん"),
       ),
-      body: new StreamBuilder<QuerySnapshot>(
-          stream: Firestore.instance.collection('promise').snapshots(),
-          builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
-            //print(snapshot);
-            //print(snapshot.hasData);
-            //print(snapshot.error);
-            if (!snapshot.hasData) return const Text('Loading...');
-            return new ListView.builder(
-              scrollDirection: Axis.vertical,
-              itemCount: snapshot.data.documents.length,
-              padding: const EdgeInsets.only(top: 10.0),
-              //itemExtent: 25.0,
-              itemBuilder: (context, index) =>
-                _buildListItem(context, snapshot.data.documents[index]),
-            );
-          }
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: new StreamBuilder<QuerySnapshot>(
+              stream: Firestore.instance.collection('promise').snapshots(),
+              builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
+                //print(snapshot);
+                //print(snapshot.hasData);
+                //print(snapshot.error);
+                if (!snapshot.hasData) return const Text('Loading...');
+                return new ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: snapshot.data.documents.length,
+                  padding: const EdgeInsets.only(top: 10.0),
+                  //itemExtent: 25.0,
+                  itemBuilder: (context, index) =>
+                    _buildListItem(context, snapshot.data.documents[index]),
+                );
+              }
 
+          ),
+        ),
       ),
       floatingActionButton: new FloatingActionButton(
         child: new Icon(Icons.check),
@@ -125,7 +139,7 @@ class _List extends StatelessWidget {
             context,
             MaterialPageRoute(
               settings: const RouteSettings(name: "/new"),
-              builder: (BuildContext context) => new InputForm()
+              builder: (BuildContext context) => new InputForm(null)
             ),
           );
         },
@@ -149,7 +163,16 @@ class _List extends StatelessWidget {
                             new FlatButton(
                               child: const Text("へんしゅう"),
                               onPressed: () {
+                                print(document.documentID);
+                                print(document['name']);
                                 print("へんしゅうだよ");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      settings: const RouteSettings(name: "/new"),
+                                      builder: (BuildContext context) => new InputForm(document)
+                                  ),
+                                );
                               },
                             ),
                           ],
