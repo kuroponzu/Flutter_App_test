@@ -22,24 +22,27 @@ class InputForm extends StatefulWidget {
   @override
   _MyInputFormState createState() => new _MyInputFormState();
 }
-
+class _formData {
+  String user = '';
+  String loan = '';
+}
 class _MyInputFormState extends State<InputForm> {
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  _formData _data = new _formData();
 
 //  @override
  Widget build(BuildContext context) {
-   final _myController = TextEditingController();
-   final _myController2 = TextEditingController();
    var _mainReference;
    if(this.widget.docs != null){
-     if(_myController.text == "") {
        //_myController.text = "強制的に変更";//widget.docs['name'];
-       _myController.text = widget.docs['name'];
-       _myController2.text = widget.docs['loan'];
-       _mainReference = Firestore.instance.collection('promise').document(widget.docs.documentID);
-     }
+     _data.user = widget.docs['name'];
+     _data.loan = widget.docs['loan'];
+     _mainReference = Firestore.instance.collection('promise').document(widget.docs.documentID);
    }else{
      _mainReference = Firestore.instance.collection('promise').document();
    }
+
+
 
    Widget titleSection = Scaffold(
        appBar: AppBar(
@@ -49,8 +52,13 @@ class _MyInputFormState extends State<InputForm> {
            IconButton(
              icon: Icon(Icons.save),
              onPressed: () {
-               _mainReference.setData({ 'name': _myController.text, 'loan': _myController2.text });
-               print(_myController.text);
+               if (this._formKey.currentState.validate()) {
+                 _formKey.currentState.save();
+               }
+               print('User: ${_data.user}');
+               print('Loan: ${_data.loan}');
+
+               _mainReference.setData({ 'name': _data.user, 'loan': _data.loan });
                Navigator.push(
                  context,
                  MaterialPageRoute(
@@ -72,24 +80,34 @@ class _MyInputFormState extends State<InputForm> {
        ),
        body: new SafeArea(
            child: new Form(
+               key: this._formKey,
                child: new ListView(
                  padding: const EdgeInsets.all(20.0),
                    children: <Widget>[
                      new TextFormField(
-                       controller: _myController,
+                       //controller: _myController,
                        decoration: const InputDecoration(
                          icon: const Icon(Icons.person),
                          hintText: '名前',
                          labelText: 'Name',
+
                        ),
+                       onSaved: (String value) {
+                         this._data.user = value;
+                       },
+                       initialValue: _data.user,
                      ),
                      new TextFormField(
-                       controller: _myController2,
+                       //controller: _myController2,
                        decoration: const InputDecoration(
                          icon: const Icon(Icons.person),
                          hintText: '借りたもの',
                          labelText: 'loan',
                        ),
+                       onSaved: (String value) {
+                         this._data.loan = value;
+                       },
+                       initialValue: _data.loan,
                      ),
                    ]
                ))
