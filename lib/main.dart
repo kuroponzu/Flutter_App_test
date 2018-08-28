@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
+
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
@@ -26,13 +27,19 @@ class InputForm extends StatefulWidget {
 
 class _MyInputFormState extends State<InputForm> {
 
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+
+  var _myController = TextEditingController();
+  var _myController2 = TextEditingController();
+  var name;
+  var loan;
+  
+
 //  @override
  Widget build(BuildContext context) {
-   final _myController = TextEditingController();
-   final _myController2 = TextEditingController();
+
 
    final _mainReference = Firestore.instance.collection('promise').document();  // 1
-
    Widget titleSection = Scaffold(
        appBar: AppBar(
          title: const Text('かしかりめも'),
@@ -41,22 +48,28 @@ class _MyInputFormState extends State<InputForm> {
            IconButton(
              icon: Icon(Icons.save),
              onPressed: () {
-               _mainReference.setData({ 'name': _myController.text, 'loan': _myController2.text });
-               print(_myController.text);
+               _formKey.currentState.save();
+               _mainReference.setData({ 'name': name.toString(), 'loan': loan.toString()});
+//               _myController.dispose();
+//               _myController2.dispose();
+               print(name);
+               print(loan);
                Navigator.push(
-                 context,
-                 MaterialPageRoute(
-                     settings: const RouteSettings(name: "/home"),
-                     //builder: (context) => new _List(_myController,_myController2)
-                     builder: (context) => new _List()
-               ),
+                   context,
+                   MaterialPageRoute(
+                   settings: const RouteSettings(name: "/home"),
+                       builder: (context) => new _List()
+                   ),
                );
-             },
-           ),
+               }
+               ),
            IconButton(
              icon: Icon(Icons.delete),
              onPressed: () {
+               _formKey.currentState.save();
                print("Delete");
+               print(name);
+               print(loan);
                //_myController.text = "";
              },
            )
@@ -64,6 +77,7 @@ class _MyInputFormState extends State<InputForm> {
        ),
        body: new SafeArea(
            child: new Form(
+               key: this._formKey,
                child: new ListView(
                  padding: const EdgeInsets.all(20.0),
                    children: <Widget>[
@@ -74,14 +88,21 @@ class _MyInputFormState extends State<InputForm> {
                          hintText: '名前',
                          labelText: 'Name',
                        ),
+                       onSaved: (String name){
+                         this.name = name;
+                       },
                      ),
                      new TextFormField(
+                       validator: (value){},
                        controller: _myController2,
                        decoration: const InputDecoration(
                          icon: const Icon(Icons.person),
                          hintText: '借りたもの',
                          labelText: 'loan',
                        ),
+                       onSaved: (String loan){
+                         this.loan = loan;
+                       },
                      ),
                    ]
                ))
@@ -125,7 +146,7 @@ class _List extends StatelessWidget {
             context,
             MaterialPageRoute(
               settings: const RouteSettings(name: "/new"),
-              builder: (BuildContext context) => new InputForm()
+              builder: (BuildContext context) =>  InputForm(),
             ),
           );
         },
