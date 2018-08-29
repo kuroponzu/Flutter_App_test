@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
-
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-
-  @override
+   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       title: "FlutterDemo",
       home: _List(),
@@ -25,29 +20,27 @@ class InputForm extends StatefulWidget {
   _MyInputFormState createState() => new _MyInputFormState();
 }
 class _formData {
-  String user = '';
-  String loan = '';
+  String user;
+  String loan;
 }
 class _MyInputFormState extends State<InputForm> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   _formData _data = new _formData();
   bool deleteFlg;
-//  @override
+  @override
   Widget build(BuildContext context) {
     var _mainReference;
-    var _deleteButton = null;
     if (this.widget.docs != null) {
-      //_myController.text = "強制的に変更";//widget.docs['name'];
       _data.user = widget.docs['name'];
       _data.loan = widget.docs['loan'];
-      _mainReference = Firestore.instance.collection('promise').document(
-          widget.docs.documentID);
+      _mainReference = Firestore.instance.collection('promise').document(widget.docs.documentID);
       deleteFlg = true;
     } else {
+      _data.user = "";
+      _data.loan = "";
       _mainReference = Firestore.instance.collection('promise').document();
       deleteFlg = false;
     }
-
 
     Widget titleSection = Scaffold(
         appBar: AppBar(
@@ -62,23 +55,18 @@ class _MyInputFormState extends State<InputForm> {
                   _mainReference.setData(
                       { 'name': _data.user, 'loan': _data.loan});
                   Navigator.pop(context);
+                  print('User: ${_data.user}');
+                  print('Loan: ${_data.loan}');
                 }
-                print('User: ${_data.user}');
-                print('Loan: ${_data.loan}');
               },
             ),
             IconButton(
               icon: Icon(Icons.delete),
 
               onPressed: !deleteFlg? null:() {
-                if(deleteFlg) {
                   print("Delete");
                   _mainReference.delete();
                   Navigator.pop(context);
-                }else{
-                  print("Delete disable");
-                  null;
-                }
               },
             )
           ],
@@ -102,7 +90,7 @@ class _MyInputFormState extends State<InputForm> {
                         },
                         validator: (value) {
                           if (value.isEmpty) {
-                            return '名前を必ず入力をしてください。';
+                            return '名前は必須入力項目です';
                           }
                         },
                         initialValue: _data.user,
@@ -110,7 +98,7 @@ class _MyInputFormState extends State<InputForm> {
                       new TextFormField(
                         //controller: _myController2,
                         decoration: const InputDecoration(
-                          icon: const Icon(Icons.person),
+                          icon: const Icon(Icons.business_center),
                           hintText: '借りたもの',
                           labelText: 'loan',
                         ),
@@ -118,10 +106,10 @@ class _MyInputFormState extends State<InputForm> {
                           this._data.loan = value;
                         },
                         validator: (value) {
-                        if (value.isEmpty) {
-                          return '借りたものを必ず入力をしてください。';
-                        }
-                      },
+                          if (value.isEmpty) {
+                            return '借りたものは必須入力項目です';
+                          }
+                        },
                         initialValue: _data.loan,
                       ),
                     ]
