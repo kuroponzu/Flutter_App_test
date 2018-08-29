@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
 class InputForm extends StatefulWidget {
   InputForm(this.docs);
   final DocumentSnapshot docs;
+
   @override
   _MyInputFormState createState() => new _MyInputFormState();
 }
@@ -29,92 +30,96 @@ class _formData {
 class _MyInputFormState extends State<InputForm> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   _formData _data = new _formData();
-
+  bool deleteFlg;
 //  @override
- Widget build(BuildContext context) {
-   var _mainReference;
-   if(this.widget.docs != null){
-       //_myController.text = "強制的に変更";//widget.docs['name'];
-     _data.user = widget.docs['name'];
-     _data.loan = widget.docs['loan'];
-     _mainReference = Firestore.instance.collection('promise').document(widget.docs.documentID);
-   }else{
-     _mainReference = Firestore.instance.collection('promise').document();
-   }
+  Widget build(BuildContext context) {
+    var _mainReference;
+    var _deleteButton = null;
+    if (this.widget.docs != null) {
+      //_myController.text = "強制的に変更";//widget.docs['name'];
+      _data.user = widget.docs['name'];
+      _data.loan = widget.docs['loan'];
+      _mainReference = Firestore.instance.collection('promise').document(
+          widget.docs.documentID);
+      deleteFlg = true;
+    } else {
+      _mainReference = Firestore.instance.collection('promise').document();
+      deleteFlg = false;
+    }
 
 
+    Widget titleSection = Scaffold(
+        appBar: AppBar(
+          title: const Text('かしかりめも'),
+          actions: <Widget>[
+            // action button
+            IconButton(
+              icon: Icon(Icons.save),
+              onPressed: () {
+                if (this._formKey.currentState.validate()) {
+                  _formKey.currentState.save();
+                }
+                print('User: ${_data.user}');
+                print('Loan: ${_data.loan}');
 
-   Widget titleSection = Scaffold(
-       appBar: AppBar(
-         title: const Text('かしかりめも'),
-         actions: <Widget>[
-           // action button
-           IconButton(
-             icon: Icon(Icons.save),
-             onPressed: () {
-               if (this._formKey.currentState.validate()) {
-                 _formKey.currentState.save();
-               }
-               print('User: ${_data.user}');
-               print('Loan: ${_data.loan}');
+                _mainReference.setData(
+                    { 'name': _data.user, 'loan': _data.loan});
+                Navigator.pop(context);
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.delete),
 
-               _mainReference.setData({ 'name': _data.user, 'loan': _data.loan });
-               Navigator.push(
-                 context,
-                 MaterialPageRoute(
-                     settings: const RouteSettings(name: "/home"),
-                     //builder: (context) => new _List(_myController,_myController2)
-                     builder: (context) => new _List()
-               ),
-               );
-             },
-           ),
-           IconButton(
-             icon: Icon(Icons.delete),
-             onPressed: () {
-               print("Delete");
-               //_myController.text = "";
-             },
-           )
-         ],
-       ),
-       body: new SafeArea(
-           child: new Form(
-               key: this._formKey,
-               child: new ListView(
-                 padding: const EdgeInsets.all(20.0),
-                   children: <Widget>[
-                     new TextFormField(
-                       //controller: _myController,
-                       decoration: const InputDecoration(
-                         icon: const Icon(Icons.person),
-                         hintText: '名前',
-                         labelText: 'Name',
+              onPressed: !deleteFlg? null:() {
+                if(deleteFlg) {
+                  print("Delete");
+                  _mainReference.delete();
+                  Navigator.pop(context);
+                }else{
+                  print("Delete disable");
+                  null;
+                }
+              },
+            )
+          ],
+        ),
+        body: new SafeArea(
+            child: new Form(
+                key: this._formKey,
+                child: new ListView(
+                    padding: const EdgeInsets.all(20.0),
+                    children: <Widget>[
+                      new TextFormField(
+                        //controller: _myController,
+                        decoration: const InputDecoration(
+                          icon: const Icon(Icons.person),
+                          hintText: '名前',
+                          labelText: 'Name',
 
-                       ),
-                       onSaved: (String value) {
-                         this._data.user = value;
-                       },
-                       initialValue: _data.user,
-                     ),
-                     new TextFormField(
-                       //controller: _myController2,
-                       decoration: const InputDecoration(
-                         icon: const Icon(Icons.person),
-                         hintText: '借りたもの',
-                         labelText: 'loan',
-                       ),
-                       onSaved: (String value) {
-                         this._data.loan = value;
-                       },
-                       initialValue: _data.loan,
-                     ),
-                   ]
-               ))
-       )
-   );
-   return titleSection;
- }
+                        ),
+                        onSaved: (String value) {
+                          this._data.user = value;
+                        },
+                        initialValue: _data.user,
+                      ),
+                      new TextFormField(
+                        //controller: _myController2,
+                        decoration: const InputDecoration(
+                          icon: const Icon(Icons.person),
+                          hintText: '借りたもの',
+                          labelText: 'loan',
+                        ),
+                        onSaved: (String value) {
+                          this._data.loan = value;
+                        },
+                        initialValue: _data.loan,
+                      ),
+                    ]
+                ))
+        )
+    );
+    return titleSection;
+  }
 }
 
 class _List extends StatelessWidget {
