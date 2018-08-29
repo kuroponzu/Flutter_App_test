@@ -29,8 +29,8 @@ class _MyInputFormState extends State<InputForm> {
 
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
-  var _myController = TextEditingController();
-  var _myController2 = TextEditingController();
+ // var _myController = TextEditingController();
+ // var _myController2 = TextEditingController();
   var name;
   var loan;
   
@@ -82,7 +82,7 @@ class _MyInputFormState extends State<InputForm> {
                  padding: const EdgeInsets.all(20.0),
                    children: <Widget>[
                      new TextFormField(
-                       controller: _myController,
+                       //controller: _myController,
                        decoration: const InputDecoration(
                          icon: const Icon(Icons.person),
                          hintText: '名前',
@@ -94,7 +94,7 @@ class _MyInputFormState extends State<InputForm> {
                      ),
                      new TextFormField(
                        validator: (value){},
-                       controller: _myController2,
+                       //controller: _myController2,
                        decoration: const InputDecoration(
                          icon: const Icon(Icons.person),
                          hintText: '借りたもの',
