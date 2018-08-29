@@ -28,11 +28,19 @@ class _MyInputFormState extends State<InputForm> {
 
  // var _myController = TextEditingController();
  // var _myController2 = TextEditingController();
+  var lendorrent;
   var name;
   var loan;
 
   _formData _data = new _formData();
   bool deleteFlg;
+
+
+  void _setLendorRent(String value){
+    setState(() {
+      lendorrent = value;
+    });
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -80,16 +88,37 @@ class _MyInputFormState extends State<InputForm> {
           ],
         ),
         body: new SafeArea(
-            child: new Form(
+          child:
+            new Form(
                 key: this._formKey,
                 child: new ListView(
                     padding: const EdgeInsets.all(20.0),
                     children: <Widget>[
+                       RadioListTile(
+                        value: "rent",
+                        groupValue: "LendOrRent",
+                        title: new Text("借りた"),
+//                          selected:true,
+                        onChanged: (String value){
+                          _setLendorRent(value);
+                          print("押したよ");
+                          print(value);
+                        },
+                      ),
+
+                      RadioListTile(
+                        value: "lend",
+                        groupValue: "LendOrRent",
+                        title: new Text("貸した"),
+                        onChanged: (String value) {
+                          _setLendorRent(value);
+                        }
+                      ),
                       new TextFormField(
                         //controller: _myController,
                         decoration: const InputDecoration(
                           icon: const Icon(Icons.person),
-                          hintText: '名前',
+                          hintText: '相手の名前',
                           labelText: 'Name',
 
                         ),
@@ -107,7 +136,7 @@ class _MyInputFormState extends State<InputForm> {
                         //controller: _myController2,
                         decoration: const InputDecoration(
                           icon: const Icon(Icons.business_center),
-                          hintText: '借りたもの',
+                          hintText: '借りたもの、貸したもの',
                           labelText: 'loan',
                         ),
                         onSaved: (String value) {
@@ -115,14 +144,15 @@ class _MyInputFormState extends State<InputForm> {
                         },
                         validator: (value) {
                           if (value.isEmpty) {
-                            return '借りたものは必須入力項目です';
+                            return '借りたもの、貸したものは必須入力項目です';
                           }
                         },
                         initialValue: _data.loan,
                       ),
-                    ]
-                ))
-        )
+                      ],
+                ),
+            ),
+        ),
     );
     return titleSection;
   }
