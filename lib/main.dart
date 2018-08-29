@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
+
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
@@ -58,13 +59,12 @@ class _MyInputFormState extends State<InputForm> {
               onPressed: () {
                 if (this._formKey.currentState.validate()) {
                   _formKey.currentState.save();
+                  _mainReference.setData(
+                      { 'name': _data.user, 'loan': _data.loan});
+                  Navigator.pop(context);
                 }
                 print('User: ${_data.user}');
                 print('Loan: ${_data.loan}');
-
-                _mainReference.setData(
-                    { 'name': _data.user, 'loan': _data.loan});
-                Navigator.pop(context);
               },
             ),
             IconButton(
@@ -100,6 +100,11 @@ class _MyInputFormState extends State<InputForm> {
                         onSaved: (String value) {
                           this._data.user = value;
                         },
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return '名前を必ず入力をしてください。';
+                          }
+                        },
                         initialValue: _data.user,
                       ),
                       new TextFormField(
@@ -112,6 +117,11 @@ class _MyInputFormState extends State<InputForm> {
                         onSaved: (String value) {
                           this._data.loan = value;
                         },
+                        validator: (value) {
+                        if (value.isEmpty) {
+                          return '借りたものを必ず入力をしてください。';
+                        }
+                      },
                         initialValue: _data.loan,
                       ),
                     ]
