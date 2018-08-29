@@ -25,92 +25,15 @@ class _formData {
 }
 class _MyInputFormState extends State<InputForm> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-<<<<<<< HEAD
 
  // var _myController = TextEditingController();
  // var _myController2 = TextEditingController();
   var name;
   var loan;
-  
 
-//  @override
- Widget build(BuildContext context) {
-
-
-   final _mainReference = Firestore.instance.collection('promise').document();  // 1
-   Widget titleSection = Scaffold(
-       appBar: AppBar(
-         title: const Text('かしかりめも'),
-         actions: <Widget>[
-           // action button
-           IconButton(
-             icon: Icon(Icons.save),
-             onPressed: () {
-               _formKey.currentState.save();
-               _mainReference.setData({ 'name': name.toString(), 'loan': loan.toString()});
-//               _myController.dispose();
-//               _myController2.dispose();
-               print(name);
-               print(loan);
-               Navigator.push(
-                   context,
-                   MaterialPageRoute(
-                   settings: const RouteSettings(name: "/home"),
-                       builder: (context) => new _List()
-                   ),
-               );
-               }
-               ),
-           IconButton(
-             icon: Icon(Icons.delete),
-             onPressed: () {
-               _formKey.currentState.save();
-               print("Delete");
-               print(name);
-               print(loan);
-               //_myController.text = "";
-             },
-           )
-         ],
-       ),
-       body: new SafeArea(
-           child: new Form(
-               key: this._formKey,
-               child: new ListView(
-                 padding: const EdgeInsets.all(20.0),
-                   children: <Widget>[
-                     new TextFormField(
-                       //controller: _myController,
-                       decoration: const InputDecoration(
-                         icon: const Icon(Icons.person),
-                         hintText: '名前',
-                         labelText: 'Name',
-                       ),
-                       onSaved: (String name){
-                         this.name = name;
-                       },
-                     ),
-                     new TextFormField(
-                       validator: (value){},
-                       //controller: _myController2,
-                       decoration: const InputDecoration(
-                         icon: const Icon(Icons.person),
-                         hintText: '借りたもの',
-                         labelText: 'loan',
-                       ),
-                       onSaved: (String loan){
-                         this.loan = loan;
-                       },
-                     ),
-                   ]
-               ))
-       )
-   );
-   return titleSection;
- }
-=======
   _formData _data = new _formData();
   bool deleteFlg;
+
   @override
   Widget build(BuildContext context) {
     var _mainReference;
@@ -126,7 +49,8 @@ class _MyInputFormState extends State<InputForm> {
       deleteFlg = false;
     }
 
-    Widget titleSection = Scaffold(
+    Widget titleSection;
+    titleSection = Scaffold(
         appBar: AppBar(
           title: const Text('かしかりめも'),
           actions: <Widget>[
@@ -202,7 +126,6 @@ class _MyInputFormState extends State<InputForm> {
     );
     return titleSection;
   }
->>>>>>> 7a87b6ca051311cbd5224a7f0d5494dbf9d130ef
 }
 
 class _List extends StatelessWidget {
