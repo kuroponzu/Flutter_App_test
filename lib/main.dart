@@ -1,33 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
-
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-
-  @override
+   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       title: "FlutterDemo",
       home: _List(),
       );
   }
 }
-
 class InputForm extends StatefulWidget {
-  InputForm({Key key, this.title}) : super(key: key);
-  final String title;
+  InputForm(this.docs);
+  final DocumentSnapshot docs;
+
   @override
   _MyInputFormState createState() => new _MyInputFormState();
 }
-
+class _formData {
+  String user;
+  String loan;
+}
 class _MyInputFormState extends State<InputForm> {
-
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+<<<<<<< HEAD
 
  // var _myController = TextEditingController();
  // var _myController2 = TextEditingController();
@@ -120,23 +118,29 @@ class _List extends StatelessWidget {
       appBar: AppBar(
         title: Text("いちらん"),
       ),
-      body: new StreamBuilder<QuerySnapshot>(
-          stream: Firestore.instance.collection('promise').snapshots(),
-          builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
-            //print(snapshot);
-            //print(snapshot.hasData);
-            //print(snapshot.error);
-            if (!snapshot.hasData) return const Text('Loading...');
-            return new ListView.builder(
-              scrollDirection: Axis.vertical,
-              itemCount: snapshot.data.documents.length,
-              padding: const EdgeInsets.only(top: 10.0),
-              //itemExtent: 25.0,
-              itemBuilder: (context, index) =>
-                _buildListItem(context, snapshot.data.documents[index]),
-            );
-          }
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: new StreamBuilder<QuerySnapshot>(
+              stream: Firestore.instance.collection('promise').snapshots(),
+              builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
+                //print(snapshot);
+                //print(snapshot.hasData);
+                //print(snapshot.error);
+                if (!snapshot.hasData) return const Text('Loading...');
+                return new ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: snapshot.data.documents.length,
+                  padding: const EdgeInsets.only(top: 10.0),
+                  //itemExtent: 25.0,
+                  itemBuilder: (context, index) =>
+                    _buildListItem(context, snapshot.data.documents[index]),
+                );
+              }
 
+          ),
+        ),
       ),
       floatingActionButton: new FloatingActionButton(
         child: new Icon(Icons.check),
@@ -146,7 +150,7 @@ class _List extends StatelessWidget {
             context,
             MaterialPageRoute(
               settings: const RouteSettings(name: "/new"),
-              builder: (BuildContext context) =>  InputForm(),
+              builder: (BuildContext context) => new InputForm(null)
             ),
           );
         },
@@ -170,7 +174,16 @@ class _List extends StatelessWidget {
                             new FlatButton(
                               child: const Text("へんしゅう"),
                               onPressed: () {
+                                print(document.documentID);
+                                print(document['name']);
                                 print("へんしゅうだよ");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      settings: const RouteSettings(name: "/new"),
+                                      builder: (BuildContext context) => new InputForm(document)
+                                  ),
+                                );
                               },
                             ),
                           ],
