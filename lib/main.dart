@@ -108,6 +108,101 @@ class _MyInputFormState extends State<InputForm> {
    );
    return titleSection;
  }
+=======
+  _formData _data = new _formData();
+  bool deleteFlg;
+  @override
+  Widget build(BuildContext context) {
+    var _mainReference;
+    if (this.widget.docs != null) {
+      _data.user = widget.docs['name'];
+      _data.loan = widget.docs['loan'];
+      _mainReference = Firestore.instance.collection('promise').document(widget.docs.documentID);
+      deleteFlg = true;
+    } else {
+      _data.user = "";
+      _data.loan = "";
+      _mainReference = Firestore.instance.collection('promise').document();
+      deleteFlg = false;
+    }
+
+    Widget titleSection = Scaffold(
+        appBar: AppBar(
+          title: const Text('かしかりめも'),
+          actions: <Widget>[
+            // action button
+            IconButton(
+              icon: Icon(Icons.save),
+              onPressed: () {
+                if (this._formKey.currentState.validate()) {
+                  _formKey.currentState.save();
+                  _mainReference.setData(
+                      { 'name': _data.user, 'loan': _data.loan});
+                  Navigator.pop(context);
+                  print('User: ${_data.user}');
+                  print('Loan: ${_data.loan}');
+                }
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.delete),
+
+              onPressed: !deleteFlg? null:() {
+                  print("Delete");
+                  _mainReference.delete();
+                  Navigator.pop(context);
+              },
+            )
+          ],
+        ),
+        body: new SafeArea(
+            child: new Form(
+                key: this._formKey,
+                child: new ListView(
+                    padding: const EdgeInsets.all(20.0),
+                    children: <Widget>[
+                      new TextFormField(
+                        //controller: _myController,
+                        decoration: const InputDecoration(
+                          icon: const Icon(Icons.person),
+                          hintText: '名前',
+                          labelText: 'Name',
+
+                        ),
+                        onSaved: (String value) {
+                          this._data.user = value;
+                        },
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return '名前は必須入力項目です';
+                          }
+                        },
+                        initialValue: _data.user,
+                      ),
+                      new TextFormField(
+                        //controller: _myController2,
+                        decoration: const InputDecoration(
+                          icon: const Icon(Icons.business_center),
+                          hintText: '借りたもの',
+                          labelText: 'loan',
+                        ),
+                        onSaved: (String value) {
+                          this._data.loan = value;
+                        },
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return '借りたものは必須入力項目です';
+                          }
+                        },
+                        initialValue: _data.loan,
+                      ),
+                    ]
+                ))
+        )
+    );
+    return titleSection;
+  }
+>>>>>>> 7a87b6ca051311cbd5224a7f0d5494dbf9d130ef
 }
 
 class _List extends StatelessWidget {
