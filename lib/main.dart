@@ -25,12 +25,6 @@ class _formData {
 }
 class _MyInputFormState extends State<InputForm> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-
- // var _myController = TextEditingController();
- // var _myController2 = TextEditingController();
-  var name;
-  var loan;
-
   _formData _data = new _formData();
   bool deleteFlg;
 
