@@ -28,7 +28,7 @@ class _MyInputFormState extends State<InputForm> {
 
  // var _myController = TextEditingController();
  // var _myController2 = TextEditingController();
-  var lendorrent;
+  String lendorrent = "rent";
   var name;
   var loan;
 
@@ -96,7 +96,7 @@ class _MyInputFormState extends State<InputForm> {
                     children: <Widget>[
                        RadioListTile(
                         value: "rent",
-                        groupValue: "LendOrRent",
+                        groupValue: lendorrent,
                         title: new Text("借りた"),
 //                          selected:true,
                         onChanged: (String value){
@@ -108,7 +108,7 @@ class _MyInputFormState extends State<InputForm> {
 
                       RadioListTile(
                         value: "lend",
-                        groupValue: "LendOrRent",
+                        groupValue: lendorrent,
                         title: new Text("貸した"),
                         onChanged: (String value) {
                           _setLendorRent(value);
