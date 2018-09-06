@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
+
 
 void main() => runApp(new MyApp());
 
@@ -20,37 +22,66 @@ class InputForm extends StatefulWidget {
   _MyInputFormState createState() => new _MyInputFormState();
 }
 class _formData {
+  String lendorrent;
   String user;
   String loan;
+  DateTime date;
 }
+
+
 class _MyInputFormState extends State<InputForm> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-
+  _formData _data = new _formData();
  // var _myController = TextEditingController();
  // var _myController2 = TextEditingController();
   String lendorrent = "rent";
-  var name;
-  var loan;
-
-  _formData _data = new _formData();
   bool deleteFlg;
-
+  DateTime date = new DateTime.now();
+  var change_Flg = 0;
+  var lendorrent_Flg = 0;
 
   void _setLendorRent(String value){
     setState(() {
       lendorrent = value;
     });
+  }
+
+  Future <Null> _selectTime(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: date,
+        firstDate: new DateTime(2018),
+        lastDate: new DateTime(2020)
+    );
+
+    if(picked != null && picked != date){
+      setState(() {
+        date = picked;
+        change_Flg = 1;
+        print(picked);
+        print(date);
+      });
     }
+  }
 
   @override
   Widget build(BuildContext context) {
     var _mainReference;
     if (this.widget.docs != null) {
+      if(lendorrent_Flg == 0 && widget.docs['lendorrent'].toString() == "lend"){
+        lendorrent = "lend";
+        lendorrent_Flg = 1;
+      }
       _data.user = widget.docs['name'];
       _data.loan = widget.docs['loan'];
+      print(date);
+      if(change_Flg == 0) {
+        date = widget.docs['date'];
+      }
       _mainReference = Firestore.instance.collection('promise').document(widget.docs.documentID);
       deleteFlg = true;
     } else {
+      _data.lendorrent = "";
       _data.user = "";
       _data.loan = "";
       _mainReference = Firestore.instance.collection('promise').document();
@@ -66,13 +97,18 @@ class _MyInputFormState extends State<InputForm> {
             IconButton(
               icon: Icon(Icons.save),
               onPressed: () {
+                _data.lendorrent = lendorrent;
+                _data.date = date;
                 if (this._formKey.currentState.validate()) {
                   _formKey.currentState.save();
                   _mainReference.setData(
-                      { 'name': _data.user, 'loan': _data.loan});
+                      { 'lendorrent':_data.lendorrent ,'name': _data.user,
+                        'loan': _data.loan,'date':_data.date});
                   Navigator.pop(context);
                   print('User: ${_data.user}');
                   print('Loan: ${_data.loan}');
+                  print('lendorrent:${_data.lendorrent}');
+                  print('date:${_data.date}');
                 }
               },
             ),
@@ -149,6 +185,13 @@ class _MyInputFormState extends State<InputForm> {
                         },
                         initialValue: _data.loan,
                       ),
+                       new Text("締め切り日：${date.toString()}"),
+                       new RaisedButton(
+                           child: new Text("締め切り日変更"),
+                           onPressed: (){_selectTime(context);}
+                       ),
+
+
                       ],
                 ),
             ),
@@ -173,9 +216,6 @@ class _List extends StatelessWidget {
           child: new StreamBuilder<QuerySnapshot>(
               stream: Firestore.instance.collection('promise').snapshots(),
               builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
-                //print(snapshot);
-                //print(snapshot.hasData);
-                //print(snapshot.error);
                 if (!snapshot.hasData) return const Text('Loading...');
                 return new ListView.builder(
                   scrollDirection: Axis.vertical,
@@ -186,7 +226,6 @@ class _List extends StatelessWidget {
                     _buildListItem(context, snapshot.data.documents[index]),
                 );
               }
-
           ),
         ),
       ),
