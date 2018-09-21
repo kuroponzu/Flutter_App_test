@@ -1,19 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() => runApp(new MyApp());
 
+FirebaseUser firebaseUser;
 class MyApp extends StatelessWidget {
    @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "FlutterDemo",
-      home: _List(),
-      );
+     return MaterialApp(
+       title: "FlutterDemo",
+       routes: <String, WidgetBuilder>{
+         '/': (_) => new Splash(),
+         '/list': (_) => new _List(),
+       },
+     );
   }
 }
+
+class Splash extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    _getUser().then((user){
+      Navigator.pushReplacementNamed(context, "/list");
+    });
+    return Scaffold(
+      appBar: AppBar(
+          title: const Text('かしかりメモ'),
+      ),
+      body: Center(
+        child: new Text("スプラッシュ画面"),
+      ),
+    );
+  }
+}
+
 class InputForm extends StatefulWidget {
   InputForm(this.docs);
   final DocumentSnapshot docs;
@@ -28,12 +51,9 @@ class _formData {
   DateTime date;
 }
 
-
 class _MyInputFormState extends State<InputForm> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   _formData _data = new _formData();
- // var _myController = TextEditingController();
- // var _myController2 = TextEditingController();
   String lendorrent = "rent";
   bool deleteFlg;
   DateTime date = new DateTime.now();
@@ -78,18 +98,17 @@ class _MyInputFormState extends State<InputForm> {
       if(change_Flg == 0) {
         date = widget.docs['date'];
       }
-      _mainReference = Firestore.instance.collection('promise').document(widget.docs.documentID);
+      _mainReference = Firestore.instance.collection('users').document(firebaseUser.uid).collection("promise").document(widget.docs.documentID);
       deleteFlg = true;
     } else {
       _data.lendorrent = "";
       _data.user = "";
       _data.loan = "";
-      _mainReference = Firestore.instance.collection('promise').document();
+      _mainReference = Firestore.instance.collection('users').document(firebaseUser.uid).collection("promise").document();
       deleteFlg = false;
     }
 
-    Widget titleSection;
-    titleSection = Scaffold(
+   return new Scaffold(
         appBar: AppBar(
           title: const Text('かしかりめも'),
           actions: <Widget>[
@@ -197,24 +216,33 @@ class _MyInputFormState extends State<InputForm> {
             ),
         ),
     );
-    return titleSection;
+
   }
 }
 
 class _List extends StatelessWidget {
 
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text("いちらん"),
+          actions: <Widget>[
+            // action button
+            IconButton(
+              icon: Icon(Icons.exit_to_app),
+              onPressed: () {
+                print("login");
+                showBasicDialog(context);
+              },
+            )
+          ]
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: new StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance.collection('promise').snapshots(),
+              stream: Firestore.instance.collection('users').document(firebaseUser.uid).collection("promise").snapshots(),
               builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData) return const Text('Loading...');
                 return new ListView.builder(
@@ -223,7 +251,7 @@ class _List extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 10.0),
                   //itemExtent: 25.0,
                   itemBuilder: (context, index) =>
-                    _buildListItem(context, snapshot.data.documents[index]),
+                      _buildListItem(context, snapshot.data.documents[index]),
                 );
               }
           ),
@@ -236,48 +264,184 @@ class _List extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              settings: const RouteSettings(name: "/new"),
-              builder: (BuildContext context) => new InputForm(null)
+                settings: const RouteSettings(name: "/new"),
+                builder: (BuildContext context) => new InputForm(null)
             ),
           );
         },
       ),
     );
   }
-
-  Widget _buildListItem(BuildContext context, DocumentSnapshot document){
+}
+  Widget _buildListItem(BuildContext context, DocumentSnapshot document) {
     return new Card(
-          child: new Column(
-                  mainAxisSize: MainAxisSize.min,
+      child: new Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: const Icon(Icons.android),
+              title: Text(document['name']),
+              subtitle: Text(document['loan']),
+            ),
+            new ButtonTheme.bar(
+                child: new ButtonBar(
                   children: <Widget>[
-                    ListTile(
-                      leading: const Icon(Icons.android),
-                      title: Text(document['name']),
-                      subtitle: Text(document['loan']),
+                    new FlatButton(
+                      child: const Text("へんしゅう"),
+                      onPressed: () {
+                        print(document.documentID);
+                        print(document['name']);
+                        print("へんしゅうだよ");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              settings: const RouteSettings(name: "/overwrite"),
+                              builder: (BuildContext context) =>
+                              new InputForm(document)
+                          ),
+                        );
+                      },
                     ),
-                    new ButtonTheme.bar(
-                        child: new ButtonBar(
-                          children: <Widget>[
-                            new FlatButton(
-                              child: const Text("へんしゅう"),
-                              onPressed: () {
-                                print(document.documentID);
-                                print(document['name']);
-                                print("へんしゅうだよ");
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      settings: const RouteSettings(name: "/new"),
-                                      builder: (BuildContext context) => new InputForm(document)
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        )
-                    ),
-                  ]
-          ),
+                  ],
+                )
+            ),
+          ]
+      ),
     );
   }
-}
+
+  void showBasicDialog(BuildContext context) {
+    final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+    String email, password;
+    if(firebaseUser.isAnonymous) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) =>
+        new AlertDialog(
+          title: new Text("ログイン/登録ダイアログ"),
+          content: new Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                new TextFormField(
+                  decoration: const InputDecoration(
+                    icon: const Icon(Icons.mail),
+                    labelText: 'Email',
+                  ),
+                  onSaved: (String value) {
+                    email = value;
+                  },
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Emailは必須入力項目です';
+                    }
+                  },
+
+                ),
+                new TextFormField(
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    icon: const Icon(Icons.vpn_key),
+                    labelText: 'Password',
+                  ),
+                  onSaved: (String value) {
+                    password = value;
+                  },
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Passwordは必須入力項目です';
+                    }
+                    if(value.length<6){
+                      return 'Passwordは6桁以上です';
+                    }
+                  },
+                ),
+
+              ],
+            ),
+          ),
+
+
+          // ボタンの配置
+          actions: <Widget>[
+            new FlatButton(
+                child: const Text('キャンセル'),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            new FlatButton(
+                child: const Text('登録'),
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    _formKey.currentState.save();
+                    _createUser(email, password)
+                        .then((FirebaseUser user) => Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false))
+                        .catchError((e) {
+                          Fluttertoast.showToast(msg: "Firebaseの登録に失敗しました。");
+                    });
+                  }
+                }),
+            new FlatButton(
+                child: const Text('ログイン'),
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    _formKey.currentState.save();
+                    _signIn(email, password)
+                        .then((FirebaseUser user) => Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false))
+                        .catchError((e) {
+                          Fluttertoast.showToast(msg: "Firebaseのログインに失敗しました。");
+                    });
+                  }
+                })
+          ],
+        ),
+      );
+    }else{
+      showDialog(
+        context: context,
+        builder: (BuildContext context) =>
+        new AlertDialog(
+          title: new Text("確認ダイアログ"),
+          content: new Text((firebaseUser.isAnonymous?"匿名ユーザー":firebaseUser.email) + " でログインしています。"),
+
+          actions: <Widget>[
+            new FlatButton(
+                child: const Text('キャンセル'),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            new FlatButton(
+                child: const Text('ログアウト'),
+                onPressed: () {
+                  _auth.signOut();
+                  Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
+                }),
+          ],
+        ),
+      );
+    }
+  }
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  Future<FirebaseUser> _signIn(String email, String password) async {
+    final FirebaseUser user = await _auth.signInWithEmailAndPassword(
+        email: email, password: password);
+    print("User id is ${user.uid}");
+    return user;
+  }
+
+  Future<FirebaseUser> _createUser(String email, String password) async {
+    final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
+        email: email, password: password);
+    print("User id is ${user.uid}");
+    return user;
+  }
+
+  Future<FirebaseUser> _getUser() async {
+    final FirebaseUser user = await _auth.currentUser();
+    if(user != null) {
+      firebaseUser = user;
+    }else{
+      await _auth.signInAnonymously();
+      firebaseUser = await _auth.currentUser();
+    }
+  }
